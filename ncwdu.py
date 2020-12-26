@@ -1,21 +1,8 @@
-import os
-import time
-from multiprocessing import Manager
-from multiprocessing.dummy import Pool as ThreadPool
-
-from prettytable import PrettyTable
-
-manager = Manager()
-files = manager.list([])
-out = PrettyTable()
-out.title = 'cwdu Course Work Disk Usage 2020'
-out.field_names = [' ', '', 'Size in bytes', 'Size in %']
-out.align["Size in bytes"] = "c"
-out.align["Size in %"] = "c"
+#!/usr/bin/python3
 
 
 def start():
-    use_pool(42)
+    use_pool(44)
     print_dir_info(sum([sizes for names, sizes in files]))
     while True:
         key = input("\nEnter a command: ")
@@ -36,16 +23,13 @@ def use_pool(n):
 
 
 def get_info(f):
-    if os.path.exists(f):
-        if os.path.isfile(f):
-            fp = os.path.join(os.getcwd(), f)
-            try:
+    try:
+        if os.path.exists(f):
+            if os.path.isfile(f):
+                fp = os.path.join(os.getcwd(), f)
                 info = (f, os.path.getsize(fp))
                 files.append(info)
-            except PermissionError:
-                pass
-        elif os.path.isdir(f):
-            try:
+            elif os.path.isdir(f):
                 dir_size = 0
                 for dirpath, dirnames, filenames in os.walk(f):
                     for filein in filenames:
@@ -54,8 +38,8 @@ def get_info(f):
                             dir_size += os.path.getsize(fp)
                 info = (f, dir_size)
                 files.append(info)
-            except PermissionError:
-                pass
+    except (PermissionError, FileNotFoundError, OSError):
+        pass
 
 
 def print_dir_info(total_size):
@@ -91,14 +75,14 @@ def action(key):
             dirch = int(key)
             if dirch == 1 and os.path.dirname(os.path.dirname(os.getcwd())) != os.getcwd():
                 os.chdir('..')
-                use_pool(42)
+                use_pool(44)
                 print_dir_info(sum([sizes for names, sizes in files]))
             elif 2 <= dirch < len(files) + 2:
                 p = files[dirch - 2][0]
                 if os.path.isdir(p):
                     try:
                         os.chdir(p)
-                        use_pool(42)
+                        use_pool(44)
                     except PermissionError:
                         print("You don't have permission to go there =(")
                     finally:
@@ -108,4 +92,18 @@ def action(key):
 
 
 if __name__ == '__main__':
+    import os
+    import time
+    from multiprocessing import Manager
+    from multiprocessing.dummy import Pool as ThreadPool
+
+    from prettytable import PrettyTable
+
+    manager = Manager()
+    files = manager.list([])
+    out = PrettyTable()
+    out.title = 'cwdu Course Work Disk Usage 2020'
+    out.field_names = [' ', '', 'Size in bytes', 'Size in %']
+    out.align["Size in bytes"] = "c"
+    out.align["Size in %"] = "c"
     start()

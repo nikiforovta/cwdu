@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import os
 import time
 
@@ -26,16 +28,13 @@ def dir_info():
     file_list = os.listdir(os.getcwd())
     start_time = time.time()
     for f in file_list:
-        if os.path.exists(f):
-            if os.path.isfile(f):
-                fp = os.path.join(os.getcwd(), f)
-                try:
+        try:
+            if os.path.exists(f):
+                if os.path.isfile(f):
+                    fp = os.path.join(os.getcwd(), f)
                     info = (f, os.path.getsize(fp))
                     files.append(info)
-                except PermissionError:
-                    pass
-            elif os.path.isdir(f):
-                try:
+                elif os.path.isdir(f):
                     dir_size = 0
                     for dirpath, dirnames, filenames in os.walk(f):
                         for filein in filenames:
@@ -44,8 +43,8 @@ def dir_info():
                                 dir_size += os.path.getsize(fp)
                     info = (f, dir_size)
                     files.append(info)
-                except (PermissionError, OSError):
-                    pass
+        except (PermissionError, OSError):
+            pass
     print(f"I spent {time.time() - start_time} s to get directory info")
     size = sum([sizes for names, sizes in files])
     out.add_row([">", f"{os.getcwd()}", f"{size}", ""])
