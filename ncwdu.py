@@ -2,7 +2,7 @@
 
 
 def start():
-    use_pool(44)
+    use_pool()
     print_dir_info(sum([sizes for names, sizes in files]))
     while True:
         key = input("\nEnter a command: ")
@@ -11,8 +11,8 @@ def start():
             break
 
 
-def use_pool(n):
-    pool = ThreadPool(n)
+def use_pool():
+    pool = ThreadPool(cpu_count() + 1)
     file_list = os.listdir(os.getcwd())
     files[:] = []
     starting = time.time()
@@ -66,6 +66,7 @@ def print_help():
 
 
 def action(key):
+    global threads
     if key == "h":
         return print_help()
     elif key == "q":
@@ -75,14 +76,14 @@ def action(key):
             dirch = int(key)
             if dirch == 1 and os.path.dirname(os.path.dirname(os.getcwd())) != os.getcwd():
                 os.chdir('..')
-                use_pool(44)
+                use_pool()
                 print_dir_info(sum([sizes for names, sizes in files]))
             elif 2 <= dirch < len(files) + 2:
                 p = files[dirch - 2][0]
                 if os.path.isdir(p):
                     try:
                         os.chdir(p)
-                        use_pool(44)
+                        use_pool()
                     except PermissionError:
                         print("You don't have permission to go there =(")
                     finally:
@@ -94,7 +95,7 @@ def action(key):
 if __name__ == '__main__':
     import os
     import time
-    from multiprocessing import Manager
+    from multiprocessing import Manager, cpu_count
     from multiprocessing.dummy import Pool as ThreadPool
 
     from prettytable import PrettyTable

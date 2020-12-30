@@ -22,17 +22,15 @@ def get_info(f):
 
 
 if __name__ == '__main__':
-    import operator
     import os
     import time
-    from multiprocessing import Manager
+    from multiprocessing import Manager, cpu_count
     from multiprocessing.dummy import Pool as ThreadPool
 
     manager = Manager()
     files = manager.list([])
-    res = ([])
-    for i in range(1, 101):
-        for _ in range(3):
+    for i in range(1, cpu_count() + 3):
+        for k in range(11):
             os.chdir('..')
             pool = ThreadPool(i)
             fileslist = os.listdir(os.getcwd())
@@ -42,10 +40,7 @@ if __name__ == '__main__':
             pool.close()
             pool.join()
             timed = time.time() - start
-            print(f"{i} threads: {timed} s")
+            if k == 10:
+                print(f"{i} threads: {timed} s")
             info = (i, timed)
-            res.append(info)
             os.chdir("./cwdu")
-
-    res.sort(key=operator.itemgetter(1))
-    print(res[:50])
